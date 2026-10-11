@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeonPulse Arcade & Betting Lounge</title>
-    <link rel="icon" type="image/png" href="https://img.icons8.com/neon/96/dice.png">
+    
+    <!-- FAVICON ICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path fill='%23ff2a85' d='M52 16H12C5.4 16 0 21.4 0 28v12c0 8.8 7.2 16 16 16 4.2 0 8-1.6 10.9-4.3L32 46l5.1 5.7c2.9 2.7 6.7 4.3 10.9 4.3 8.8 0 16-7.2 16-16V28c0-6.6-5.4-12-12-12zM22 34h-4v4c0 1.1-.9 2-2 2s-2-.9-2-2v-4h-4c-1.1 0-2-.9-2-2s.9-2 2-2h4v-4c0-1.1.9-2 2-2s2 .9 2 2v4h4c1.1 0 2 .9 2 2s-.9 2-2 2zm24 6c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zm6-8c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3 z'/></svg>">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -117,16 +120,16 @@
                     </div>
                 </div>
                 <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-extrabold rounded-xl shadow-neon-pink hover:opacity-95 transition-all">
-                    CREATE ACCOUNT (+₱50 Free)
+                    CREATE ACCOUNT (+₱500 Free)
                 </button>
             </form>
 
-            <!-- <div class="mt-6 pt-6 border-t border-arcade-border text-center">
+            <div class="mt-6 pt-6 border-t border-arcade-border text-center">
                 <p class="text-xs text-slate-400 mb-2 font-medium">Default Super Admin Demo:</p>
                 <button onclick="fillDemo('admin', 'admin123')" class="px-3 py-1.5 bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs rounded-lg hover:bg-purple-900/60 transition-all">
                     <i class="fa-solid fa-shield-halved mr-1"></i> Admin (admin / admin123)
                 </button>
-            </div> -->
+            </div>
         </div>
     </div>
 
@@ -143,8 +146,8 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 bg-arcade-dark/80 border border-arcade-border px-4 py-2 rounded-2xl shadow-inner">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex items-center gap-3 bg-arcade-dark/80 border border-arcade-border px-3 sm:px-4 py-2 rounded-2xl shadow-inner">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-arcade-dark font-bold text-sm shadow-neon-yellow">
                         <i class="fa-solid fa-coins"></i>
                     </div>
@@ -153,6 +156,12 @@
                         <div id="header-balance" class="text-sm font-extrabold text-arcade-neonYellow">₱0.00</div>
                     </div>
                 </div>
+
+                <!-- USER PROFILE BUTTON -->
+                <button onclick="openProfileModal()" title="User Profile" class="flex items-center gap-2 px-3 py-2 bg-arcade-dark hover:bg-slate-800 border border-arcade-border rounded-2xl transition-all">
+                    <div class="w-7 h-7 rounded-full bg-arcade-neonPurple flex items-center justify-center text-xs font-bold text-white"><i class="fa-solid fa-user"></i></div>
+                    <span id="header-username" class="text-xs font-bold text-slate-200 hidden sm:inline">Profile</span>
+                </button>
 
                 <button onclick="openRechargeModal()" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-bold text-xs rounded-xl shadow-neon-pink hover:opacity-95 transition-all">
                     <i class="fa-solid fa-wallet"></i> Recharge
@@ -177,10 +186,13 @@
                     <div class="relative z-10 max-w-xl">
                         <span class="text-xs font-bold uppercase tracking-widest text-arcade-neonPink bg-arcade-neonPink/10 px-3 py-1 rounded-full border border-arcade-neonPink/30 inline-block mb-3">Cloud Real-Time Connected 🟢</span>
                         <h2 class="text-3xl lg:text-4xl font-black mb-3">Welcome, <span id="welcome-username" class="text-arcade-neonCyan">Player</span>!</h2>
-                        <p class="text-slate-300 text-sm mb-6 leading-relaxed">Pumili ng laro sa ibaba, tumaya, at manalo. Mag-request ng recharge sa counter para ma-approve agad ng admin!</p>
+                        <p class="text-slate-300 text-sm mb-6 leading-relaxed">Pumili ng laro sa ibaba, tumaya, at manalo. Mag-request ng recharge o cashout anumang oras!</p>
                         <div class="flex flex-wrap gap-3">
-                            <button onclick="openRechargeModal()" class="sm:hidden inline-flex items-center gap-2 px-5 py-2.5 bg-arcade-neonPink text-white font-bold text-xs rounded-xl shadow-neon-pink">
-                                <i class="fa-solid fa-wallet"></i> Request Recharge
+                            <button onclick="openRechargeModal()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-arcade-neonPink text-white font-bold text-xs rounded-xl shadow-neon-pink">
+                                <i class="fa-solid fa-wallet"></i> Recharge
+                            </button>
+                            <button onclick="openProfileModal()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all">
+                                <i class="fa-solid fa-money-bill-transfer"></i> Cashout Request
                             </button>
                         </div>
                     </div>
@@ -195,8 +207,8 @@
                     </div>
                 </div>
 
-                <!-- GAMES GRID (6 GAMES TOTAL) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- GAMES GRID (7 GAMES TOTAL) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Game 1: Color Game -->
                     <div onclick="openGame('color-game')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-arcade-neonPink transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
                         <div class="h-40 relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
@@ -302,7 +314,7 @@
                         </div>
                     </div>
 
-                    <!-- Game 6: Minesweeper / Coin Sweeper (BAGONG LARO!) -->
+                    <!-- Game 6: Minesweeper -->
                     <div onclick="openGame('mines')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-rose-500 transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
                         <div class="h-40 relative overflow-hidden bg-gradient-to-br from-rose-950 via-red-950 to-orange-950 flex items-center justify-center p-4">
                             <div class="relative z-10 w-16 h-16 rounded-2xl border-2 border-rose-400 bg-gradient-to-tr from-rose-600 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -322,6 +334,26 @@
                         </div>
                     </div>
 
+                    <!-- Game 7: Classic Slot Machine -->
+                    <div onclick="openGame('slots')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-amber-400 transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-amber-950 via-yellow-900 to-orange-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-16 h-16 rounded-2xl border-2 border-amber-400 bg-gradient-to-tr from-amber-500 to-yellow-500 flex items-center justify-center shadow-neon-yellow group-hover:scale-110 transition-transform duration-300">
+                                <i class="fa-solid fa-gem text-2xl text-arcade-dark"></i>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-amber-400 text-arcade-dark rounded-full shadow-md">Jackpot 20x</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-amber-400 transition-colors">Classic Slots</h4>
+                                <p class="text-xs text-slate-400 mt-1">Spin 3 Reels & hit the Triple 7!</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-amber-400">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -333,14 +365,17 @@
                             <i class="fa-solid fa-shield-halved"></i> Super Account Control Center
                         </div>
                         <h2 class="text-2xl font-black text-white">Admin Dashboard</h2>
-                        <p class="text-xs text-slate-400 mt-1">Manage user recharges and balances in real-time across the shop.</p>
+                        <p class="text-xs text-slate-400 mt-1">Manage user recharges and balance adjustments in real-time.</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="switchAdminTab('recharges')" id="admin-tab-recharges-btn" class="px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all">
-                            Recharge Requests <span id="pending-count-badge" class="ml-1 px-1.5 py-0.5 bg-arcade-neonPink text-white rounded-full text-[10px]">0</span>
+                            Recharges <span id="pending-count-badge" class="ml-1 px-1.5 py-0.5 bg-arcade-neonPink text-white rounded-full text-[10px]">0</span>
+                        </button>
+                        <button onclick="switchAdminTab('cashouts')" id="admin-tab-cashouts-btn" class="px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border hover:text-white transition-all">
+                            Cashouts <span id="cashout-count-badge" class="ml-1 px-1.5 py-0.5 bg-emerald-600 text-white rounded-full text-[10px]">0</span>
                         </button>
                         <button onclick="switchAdminTab('users')" id="admin-tab-users-btn" class="px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border hover:text-white transition-all">
-                            User Management
+                            Users
                         </button>
                     </div>
                 </div>
@@ -367,7 +402,30 @@
                     </div>
                 </div>
 
-                <!-- Admin Tab 2: Users -->
+                <!-- Admin Tab 2: Cashouts -->
+                <div id="admin-cashouts-panel" class="bg-arcade-card border border-arcade-border rounded-3xl p-6 shadow-xl hidden">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Pending Cashout Requests
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-arcade-dark/80 text-xs uppercase text-slate-400 border-b border-arcade-border">
+                                <tr>
+                                    <th class="p-3.5 rounded-l-xl">Username</th>
+                                    <th class="p-3.5">Amount</th>
+                                    <th class="p-3.5">Method & Account</th>
+                                    <th class="p-3.5">Time</th>
+                                    <th class="p-3.5 text-right rounded-r-xl">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-cashouts-tbody" class="divide-y divide-arcade-border/50">
+                                <tr><td colspan="5" class="p-6 text-center text-slate-500 text-xs">Walang pending cashout request.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Tab 3: Users -->
                 <div id="admin-users-panel" class="bg-arcade-card border border-arcade-border rounded-3xl p-6 shadow-xl hidden">
                     <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-users text-arcade-neonCyan"></i> Registered Users & Balances
@@ -392,16 +450,68 @@
         </main>
     </div>
 
+    <!-- USER PROFILE & CASHOUT MODAL -->
+    <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-md shadow-2xl relative">
+            <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-arcade-neonPurple to-arcade-neonPink flex items-center justify-center text-2xl font-bold text-white mx-auto shadow-neon-pink mb-3">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <h3 id="profile-username-display" class="text-xl font-extrabold text-white">Username</h3>
+                <p class="text-xs text-arcade-neonCyan font-semibold uppercase tracking-wider">Player Seat Profile</p>
+            </div>
+
+            <!-- Balance Card -->
+            <div class="bg-arcade-dark border border-arcade-border p-4 rounded-2xl mb-6 flex justify-between items-center">
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Available Chips</div>
+                    <div id="profile-balance-display" class="text-2xl font-black text-arcade-neonYellow">₱0.00</div>
+                </div>
+                <button onclick="closeProfileModal(); openRechargeModal();" class="px-3 py-2 bg-arcade-neonPink/20 text-arcade-neonPink border border-arcade-neonPink/40 rounded-xl text-xs font-bold">
+                    + Top-Up
+                </button>
+            </div>
+
+            <!-- Cashout Form -->
+            <form onsubmit="submitCashoutRequest(event)" class="space-y-4">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Request Cashout (Withdraw)
+                </h4>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Method / Counter</label>
+                    <select id="cashout-method" class="w-full px-4 py-2.5 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+                        <option value="Shop Counter Cash">Shop Counter Cash</option>
+                        <option value="GCash">GCash</option>
+                        <option value="Maya">Maya</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Account / Number Details</label>
+                    <input type="text" id="cashout-account" required placeholder="Counter / 09123456789" class="w-full px-4 py-2.5 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Cashout Amount (₱)</label>
+                    <input type="number" id="cashout-amount" min="100" required placeholder="Min ₱100" class="w-full px-4 py-2.5 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all">
+                    SUBMIT CASHOUT REQUEST
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Recharge Request Modal -->
     <div id="recharge-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
         <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button onclick="closeRechargeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
+            <button onclick="closeRechargeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="text-center mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-arcade-neonPink/20 text-arcade-neonPink border border-arcade-neonPink/40 inline-flex items-center justify-center text-xl mb-3">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
+                <div class="w-12 h-12 rounded-2xl bg-arcade-neonPink/20 text-arcade-neonPink border border-arcade-neonPink/40 inline-flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-wallet"></i></div>
                 <h3 class="text-xl font-bold">Request Recharge</h3>
                 <p class="text-xs text-slate-400 mt-1">Mag-request ng chip top-up sa counter para ma-approve ng admin.</p>
             </div>
@@ -494,11 +604,11 @@
         </div>
     </div>
 
-    <!-- 2. Lucky Wheel -->
+    <!-- 2. Lucky Wheel (FIXED & CRYSTAL CLEAR VISUAL SLICES) -->
     <div id="modal-lucky-wheel" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
         <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-lg shadow-2xl relative my-auto text-center">
             <button onclick="closeGameModal('lucky-wheel')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div class="flex items-center justify-between mb-6 text-left">
+            <div class="flex items-center justify-between mb-4 text-left">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-neon-cyan"><i class="fa-solid fa-dharmachakra text-white text-xl"></i></div>
                     <div>
@@ -511,18 +621,34 @@
                     <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
                 </div>
             </div>
-            <div class="relative w-48 h-48 mx-auto my-6 flex items-center justify-center">
-                <div id="wheel-element" class="w-full h-full rounded-full border-4 border-arcade-neonCyan bg-gradient-to-tr from-cyan-900 to-purple-900 flex items-center justify-center shadow-neon-cyan transition-all duration-1000">
-                    <span class="text-2xl font-black text-white">SPIN</span>
+
+            <!-- Visual Wheel Container with Pointer -->
+            <div class="relative w-48 h-48 mx-auto my-4 flex items-center justify-center">
+                <!-- Top Pointer Indicator -->
+                <div class="absolute -top-3 z-20 w-0 h-0 border-x-8 border-x-transparent border-t-[14px] border-t-arcade-neonYellow filter drop-shadow"></div>
+                
+                <div id="wheel-element" class="w-full h-full rounded-full border-4 border-arcade-neonCyan shadow-neon-cyan transition-all duration-[2000ms] ease-out flex items-center justify-center relative overflow-hidden" style="background: conic-gradient(#ef4444 0deg 45deg, #06b6d4 45deg 90deg, #eab308 90deg 135deg, #9333ea 135deg 180deg, #10b981 180deg 225deg, #f59e0b 225deg 270deg, #991b1b 270deg 315deg, #3b82f6 315deg 360deg);">
+                    <!-- Segment labels -->
+                    <span class="absolute text-[10px] font-black text-white top-2">0x</span>
+                    <span class="absolute text-[10px] font-black text-white right-2">0.5x</span>
+                    <span class="absolute text-[10px] font-black text-white bottom-2">1x</span>
+                    <span class="absolute text-[10px] font-black text-white left-2">2x</span>
+                    <div class="w-12 h-12 rounded-full bg-arcade-dark border-2 border-arcade-cyan flex items-center justify-center shadow-inner z-10">
+                        <i class="fa-solid fa-star text-arcade-neonYellow text-xs"></i>
+                    </div>
                 </div>
             </div>
-            <div id="lw-result-msg" class="text-xs font-bold text-slate-400 uppercase mb-4">I-spin ang roleta</div>
+
+            <div id="lw-result-msg" class="text-xs font-bold text-arcade-neonCyan uppercase mb-4 bg-arcade-dark/80 p-2.5 rounded-xl border border-arcade-border">
+                Pointers: 10x (Blue), 5x (Orange), 3x (Green), 2x (Purple), 1x (Yellow), 0.5x (Cyan), 0x (Red)
+            </div>
+
             <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
                     <input type="number" id="lw-bet-amount" min="10" value="100" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white">
                 </div>
-                <button onclick="playLuckyWheel()" id="lw-play-btn" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonCyan to-blue-600 text-arcade-dark font-extrabold rounded-xl shadow-neon-cyan">SPIN WHEEL</button>
+                <button onclick="playLuckyWheel()" id="lw-play-btn" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonCyan to-blue-600 text-arcade-dark font-extrabold rounded-xl shadow-neon-cyan hover:opacity-95 transition-all">SPIN WHEEL</button>
             </div>
         </div>
     </div>
@@ -684,7 +810,7 @@
         </div>
     </div>
 
-    <!-- 6. MINESWEEPER / COIN SWEEPER MODAL -->
+    <!-- 6. MINESWEEPER MODAL -->
     <div id="modal-mines" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
         <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-xl shadow-2xl relative my-auto">
             <button onclick="closeGameModal('mines')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -703,7 +829,6 @@
                 </div>
             </div>
 
-            <!-- Game Control Inputs -->
             <div class="grid grid-cols-2 gap-3 bg-arcade-dark/80 p-3 rounded-2xl border border-arcade-border mb-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Taya (₱)</label>
@@ -720,12 +845,8 @@
                 </div>
             </div>
 
-            <!-- Mines Grid Board (5x5) -->
-            <div id="mines-board" class="grid grid-cols-5 gap-2 bg-arcade-dark p-3 rounded-2xl border border-arcade-border mb-4">
-                <!-- 25 Tiles populated by JS -->
-            </div>
+            <div id="mines-board" class="grid grid-cols-5 gap-2 bg-arcade-dark p-3 rounded-2xl border border-arcade-border mb-4"></div>
 
-            <!-- Action Buttons & Multiplier Display -->
             <div class="flex items-center justify-between gap-3">
                 <div id="mines-multiplier-info" class="text-xs text-slate-400 font-bold">
                     Multiplier: <span id="mines-mult-val" class="text-rose-400 font-black text-sm">1.00x</span>
@@ -734,6 +855,46 @@
                     <button onclick="startMinesGame()" id="mines-start-btn" class="w-full py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all">START GAME</button>
                     <button onclick="cashoutMines()" id="mines-cashout-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all hidden">CASH OUT (₱0.00)</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. CLASSIC SLOT MACHINE MODAL -->
+    <div id="modal-slots" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-md shadow-2xl relative my-auto text-center">
+            <button onclick="closeGameModal('slots')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div class="flex items-center justify-between mb-6 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-500 flex items-center justify-center shadow-neon-yellow"><i class="fa-solid fa-gem text-arcade-dark text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Classic Slots</h3>
+                        <p class="text-xs text-slate-400">Match 3 symbols for big jackpots!</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+
+            <!-- Slots Machine Frame -->
+            <div class="bg-gradient-to-b from-amber-950/80 to-arcade-dark border-2 border-amber-500/60 p-6 rounded-3xl shadow-neon-yellow mb-6">
+                <div class="grid grid-cols-3 gap-3 bg-black/80 p-4 rounded-2xl border border-amber-500/40 mb-4">
+                    <div id="slot-reel-1" class="h-20 bg-arcade-dark rounded-xl border border-arcade-border flex items-center justify-center text-4xl shadow-inner transition-all">🔥</div>
+                    <div id="slot-reel-2" class="h-20 bg-arcade-dark rounded-xl border border-arcade-border flex items-center justify-center text-4xl shadow-inner transition-all">💎</div>
+                    <div id="slot-reel-3" class="h-20 bg-arcade-dark rounded-xl border border-arcade-border flex items-center justify-center text-4xl shadow-inner transition-all">🔔</div>
+                </div>
+                <div id="slots-result-msg" class="text-xs font-bold text-amber-400 uppercase tracking-wider">I-spin ang Reels</div>
+            </div>
+
+            <!-- Controls -->
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
+                    <input type="number" id="slots-bet-amount" min="10" value="50" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <button onclick="spinSlots()" id="slots-play-btn" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-arcade-dark font-black text-base rounded-xl shadow-neon-yellow hover:opacity-95 transition-all">SPIN SLOTS</button>
             </div>
         </div>
     </div>
@@ -756,6 +917,7 @@
 
         let allUsers = {};
         let pendingRecharges = {};
+        let pendingCashouts = {};
         let currentUserSession = null;
 
         const colorHexMap = {
@@ -799,6 +961,13 @@
             }
         });
 
+        db.ref('cashouts').on('value', snapshot => {
+            pendingCashouts = snapshot.val() || {};
+            if (currentUserSession && currentUserSession.isAdmin) {
+                updateAdminDashboard();
+            }
+        });
+
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -821,7 +990,7 @@
             }, 3500);
         }
 
-        // RESULT POPUP & GAME TEXT LOGIC
+        // RESULT POPUP MODAL
         function showGameResult(isWin, amount, gameName, msgElementId) {
             const msgEl = document.getElementById(msgElementId);
             if (msgEl) {
@@ -930,10 +1099,10 @@
                 return;
             }
 
-            const newUser = { username, password, balance: 50, isAdmin: false };
+            const newUser = { username, password, balance: 500, isAdmin: false };
             db.ref('users/' + username).set(newUser);
             currentUserSession = newUser;
-            showToast('Account created successfully! +₱50 free chips!', 'success');
+            showToast('Account created successfully! +₱500 free chips!', 'success');
             initAppUI();
         }
 
@@ -957,6 +1126,7 @@
             mainAppView.classList.remove('hidden');
 
             document.getElementById('welcome-username').textContent = currentUserSession.username;
+            document.getElementById('header-username').textContent = currentUserSession.username;
             updateBalanceDisplay();
 
             const roleBadge = document.getElementById('role-badge');
@@ -983,6 +1153,9 @@
             const balStr = `₱${(currentUserSession.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             document.getElementById('header-balance').textContent = balStr;
             document.querySelectorAll('.modal-user-balance').forEach(el => el.textContent = balStr);
+            
+            const profBal = document.getElementById('profile-balance-display');
+            if (profBal) profBal.textContent = balStr;
         }
 
         function deductBalance(amount) {
@@ -1000,6 +1173,48 @@
             currentUserSession.balance += amount;
             db.ref('users/' + currentUserSession.username + '/balance').set(currentUserSession.balance);
             updateBalanceDisplay();
+        }
+
+        // PROFILE & CASHOUT MODAL LOGIC
+        function openProfileModal() {
+            document.getElementById('profile-username-display').textContent = currentUserSession.username;
+            document.getElementById('profile-modal').classList.remove('hidden');
+            updateBalanceDisplay();
+        }
+        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
+
+        function submitCashoutRequest(e) {
+            e.preventDefault();
+            const method = document.getElementById('cashout-method').value;
+            const account = document.getElementById('cashout-account').value.trim();
+            const amount = parseFloat(document.getElementById('cashout-amount').value);
+
+            if (isNaN(amount) || amount < 100) {
+                showToast('Ang minimum cashout ay ₱100!', 'error');
+                return;
+            }
+
+            if (currentUserSession.balance < amount) {
+                showToast('Kulang ang iyong balanse para sa cashout na ito!', 'error');
+                return;
+            }
+
+            deductBalance(amount);
+
+            const reqId = 'cash_' + Date.now();
+            const cashoutData = {
+                id: reqId,
+                username: currentUserSession.username,
+                amount: amount,
+                method: method,
+                account: account,
+                status: 'pending',
+                date: new Date().toLocaleTimeString()
+            };
+
+            db.ref('cashouts/' + reqId).set(cashoutData);
+            closeProfileModal();
+            showToast('Cashout request sent to admin for payout approval!', 'success');
         }
 
         function openRechargeModal() { document.getElementById('recharge-modal').classList.remove('hidden'); }
@@ -1043,20 +1258,30 @@
 
         function switchAdminTab(tab) {
             const rPanel = document.getElementById('admin-recharges-panel');
+            const cPanel = document.getElementById('admin-cashouts-panel');
             const uPanel = document.getElementById('admin-users-panel');
+
             const rBtn = document.getElementById('admin-tab-recharges-btn');
+            const cBtn = document.getElementById('admin-tab-cashouts-btn');
             const uBtn = document.getElementById('admin-tab-users-btn');
+
+            rPanel.classList.add('hidden');
+            cPanel.classList.add('hidden');
+            uPanel.classList.add('hidden');
+
+            rBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
+            cBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
+            uBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
 
             if (tab === 'recharges') {
                 rPanel.classList.remove('hidden');
-                uPanel.classList.add('hidden');
                 rBtn.className = 'px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all';
-                uBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
+            } else if (tab === 'cashouts') {
+                cPanel.classList.remove('hidden');
+                cBtn.className = 'px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all';
             } else {
                 uPanel.classList.remove('hidden');
-                rPanel.classList.add('hidden');
                 uBtn.className = 'px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all';
-                rBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
             }
         }
 
@@ -1079,6 +1304,30 @@
                             <td class="p-3.5 text-right">
                                 <button onclick="approveRecharge('${r.id}', '${r.username}', ${r.amount})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold mr-1">Accept</button>
                                 <button onclick="rejectRecharge('${r.id}')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const cashKeys = Object.keys(pendingCashouts);
+            document.getElementById('cashout-count-badge').textContent = cashKeys.length;
+
+            const cTbody = document.getElementById('admin-cashouts-tbody');
+            if (cashKeys.length === 0) {
+                cTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500 text-xs">Walang pending cashout request.</td></tr>`;
+            } else {
+                cTbody.innerHTML = cashKeys.map(k => {
+                    const c = pendingCashouts[k];
+                    return `
+                        <tr class="border-b border-arcade-border/50 hover:bg-arcade-dark/40">
+                            <td class="p-3.5 font-bold text-white">${c.username}</td>
+                            <td class="p-3.5 font-extrabold text-emerald-400">₱${c.amount.toLocaleString()}</td>
+                            <td class="p-3.5 text-xs text-slate-300 font-semibold">${c.method}: <span class="text-arcade-neonCyan">${c.account}</span></td>
+                            <td class="p-3.5 text-xs text-slate-400">${c.date}</td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="approveCashout('${c.id}', '${c.username}', ${c.amount})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold mr-1">Approve & Pay</button>
+                                <button onclick="rejectCashout('${c.id}', '${c.username}', ${c.amount})" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold">Refund/Reject</button>
                             </td>
                         </tr>
                     `;
@@ -1115,6 +1364,20 @@
             showToast('Recharge request rejected.', 'info');
         }
 
+        function approveCashout(id, username, amount) {
+            db.ref('cashouts/' + id).remove();
+            showToast(`Cashout of ₱${amount} for ${username} approved & completed!`, 'success');
+        }
+
+        function rejectCashout(id, username, amount) {
+            if (allUsers[username]) {
+                const refBal = Number(allUsers[username].balance || 0) + amount;
+                db.ref('users/' + username + '/balance').set(refBal);
+            }
+            db.ref('cashouts/' + id).remove();
+            showToast(`Cashout request rejected. ₱${amount} refunded to ${username}.`, 'info');
+        }
+
         function adminAdjustBalance(username) {
             const amtStr = prompt(`Bagong balanse para kay ${username}:`, allUsers[username].balance || 0);
             if (amtStr === null) return;
@@ -1131,7 +1394,7 @@
         }
         function closeGameModal(id) { document.getElementById(`modal-${id}`).classList.add('hidden'); }
 
-        // 1. COLOR GAME LOGIC
+        // 1. COLOR GAME LOGIC (WITH BUTTON LOCKING)
         let selectedColorGameColor = 'red';
         function selectColorGameColor(color) {
             selectedColorGameColor = color;
@@ -1141,8 +1404,16 @@
 
         const colorsList = ['red', 'blue', 'yellow', 'green', 'white', 'pink'];
         function playColorGame() {
+            const btn = document.getElementById('cg-play-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
             const betAmt = parseFloat(document.getElementById('cg-bet-amount').value);
-            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
 
             let rolls = 0;
             const interval = setInterval(() => {
@@ -1159,6 +1430,10 @@
         }
 
         function finalizeColorGame(betAmt) {
+            const btn = document.getElementById('cg-play-btn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
             const results = [];
             for (let i = 1; i <= 3; i++) {
                 const c = colorsList[Math.floor(Math.random() * colorsList.length)];
@@ -1176,28 +1451,59 @@
             }
         }
 
-        // 2. LUCKY WHEEL LOGIC
-        const wheelMultipliers = [0, 0.5, 1, 2, 3, 5, 0, 10];
+        // 2. LUCKY WHEEL LOGIC (FIXED & CLEAR SLICES MULTIPLIER)
+        const wheelSlices = [
+            { mult: 0, label: '0x' },
+            { mult: 0.5, label: '0.5x' },
+            { mult: 1, label: '1x' },
+            { mult: 2, label: '2x' },
+            { mult: 3, label: '3x' },
+            { mult: 5, label: '5x' },
+            { mult: 0, label: '0x' },
+            { mult: 10, label: '10x' }
+        ];
+
         function playLuckyWheel() {
+            const btn = document.getElementById('lw-play-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
             const betAmt = parseFloat(document.getElementById('lw-bet-amount').value);
-            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
 
             const wheel = document.getElementById('wheel-element');
-            wheel.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`;
+            // Pick a random slice index (0 to 7)
+            const sliceIndex = Math.floor(Math.random() * wheelSlices.length);
+            const sliceDegree = 360 / wheelSlices.length; // 45 degrees per slice
+            // Target angle so that the selected slice stops at the top pointer (0 deg)
+            const targetCenterAngle = sliceIndex * sliceDegree + (sliceDegree / 2);
+            const randomSpins = 5 * 360; // 5 full rotations
+            const finalRotation = randomSpins + (360 - targetCenterAngle);
+
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
-                const mult = wheelMultipliers[Math.floor(Math.random() * wheelMultipliers.length)];
-                if (mult > 0) {
-                    const winnings = betAmt * mult;
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                const chosen = wheelSlices[sliceIndex];
+                if (chosen.mult > 0) {
+                    const winnings = betAmt * chosen.mult;
                     addBalance(winnings);
-                    showGameResult(true, winnings - betAmt, "Lucky Wheel", "lw-result-msg");
+                    document.getElementById('lw-result-msg').innerHTML = `<span class="text-emerald-400 font-extrabold">🎉 Tumama sa ${chosen.label} multiplier! Panalo: +₱${winnings.toFixed(2)}</span>`;
+                    showGameResult(true, winnings - betAmt, `Lucky Wheel (${chosen.label})`, "lw-result-msg");
                 } else {
-                    showGameResult(false, betAmt, "Lucky Wheel", "lw-result-msg");
+                    document.getElementById('lw-result-msg').innerHTML = `<span class="text-rose-500 font-extrabold">💸 Tumama sa 0x. Talo ang taya na ₱${betAmt}</span>`;
+                    showGameResult(false, betAmt, "Lucky Wheel (0x)", "lw-result-msg");
                 }
-            }, 1000);
+            }, 2000);
         }
 
-        // 3. COIN FLIP LOGIC
+        // 3. COIN FLIP LOGIC (WITH BUTTON LOCK)
         let selectedCoinChoice = 'heads';
         function selectCoinChoice(choice) {
             selectedCoinChoice = choice;
@@ -1206,10 +1512,21 @@
         }
 
         function playCoinFlip() {
+            const btn = document.getElementById('cf-play-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
             const betAmt = parseFloat(document.getElementById('cf-bet-amount').value);
-            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
 
             setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
                 const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
                 document.getElementById('coin-display').textContent = outcome.toUpperCase();
                 if (outcome === selectedCoinChoice) {
@@ -1222,7 +1539,7 @@
             }, 500);
         }
 
-        // 4. LUCKY DICE LOGIC
+        // 4. LUCKY DICE LOGIC (WITH BUTTON LOCK)
         let selectedDiceChoice = 'low';
         function selectDiceChoice(choice) {
             selectedDiceChoice = choice;
@@ -1231,10 +1548,21 @@
         }
 
         function playLuckyDice() {
+            const btn = document.getElementById('ld-play-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
             const betAmt = parseFloat(document.getElementById('ld-bet-amount').value);
-            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
 
             setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
                 const d1 = Math.floor(1 + Math.random() * 6);
                 const d2 = Math.floor(1 + Math.random() * 6);
                 const total = d1 + d2;
@@ -1334,7 +1662,9 @@
 
             if (!deductBalance(totalBet)) return;
 
-            document.getElementById('bingo-play-btn').disabled = true;
+            const playBtn = document.getElementById('bingo-play-btn');
+            playBtn.disabled = true;
+            playBtn.classList.add('opacity-50', 'cursor-not-allowed');
             document.getElementById('bingo-shuffle-btn').disabled = true;
             document.getElementById('bingo-card-count').disabled = true;
             document.getElementById('bingo-status-msg').textContent = 'Binubunot ang mga bola...';
@@ -1408,7 +1738,9 @@
         }
 
         function finishBingoGame(isWin, amount) {
-            document.getElementById('bingo-play-btn').disabled = false;
+            const playBtn = document.getElementById('bingo-play-btn');
+            playBtn.disabled = false;
+            playBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             document.getElementById('bingo-shuffle-btn').disabled = false;
             document.getElementById('bingo-card-count').disabled = false;
 
@@ -1421,7 +1753,7 @@
 
         // 6. MINESWEEPER GAME LOGIC
         let minesActive = false;
-        let minesGrid = []; // Array of 25 items: 'gem' or 'bomb'
+        let minesGrid = [];
         let revealedCount = 0;
         let currentMinesBet = 0;
         let minesCount = 3;
@@ -1454,7 +1786,6 @@
             revealedCount = 0;
             currentMinesMult = 1.0;
 
-            // Generate Board Array
             minesGrid = Array(25).fill('gem');
             let placed = 0;
             while (placed < minesCount) {
@@ -1465,7 +1796,6 @@
                 }
             }
 
-            // Render Board UI Buttons
             const board = document.getElementById('mines-board');
             board.innerHTML = '';
             for (let i = 0; i < 25; i++) {
@@ -1489,7 +1819,6 @@
             tile.disabled = true;
 
             if (minesGrid[idx] === 'bomb') {
-                // BOMBA NA-CLICK! SABOG!
                 tile.className = "h-12 bg-rose-600 text-white rounded-xl text-2xl flex items-center justify-center border-2 border-rose-400 animate-pulse";
                 tile.innerHTML = "💣";
                 revealAllMines();
@@ -1497,12 +1826,10 @@
                 showGameResult(false, currentMinesBet, "Minesweeper", "mines-multiplier-info");
                 resetMinesUIControls();
             } else {
-                // GEM NA-CLICK! TUMAAS ANG MULTIPLIER
                 tile.className = "h-12 bg-emerald-600 text-white rounded-xl text-2xl flex items-center justify-center border-2 border-emerald-400 shadow-md";
                 tile.innerHTML = "💎";
                 revealedCount++;
 
-                // Formula for Multiplier increase based on safe tiles left
                 const totalGems = 25 - minesCount;
                 currentMinesMult = parseFloat((1 + (revealedCount * (0.15 * minesCount))).toFixed(2));
                 
@@ -1512,7 +1839,6 @@
                 const cashoutBtn = document.getElementById('mines-cashout-btn');
                 cashoutBtn.textContent = `CASH OUT (₱${currentPayout.toFixed(2)})`;
 
-                // If cleared all safe gems
                 if (revealedCount === totalGems) {
                     cashoutMines();
                 }
@@ -1552,6 +1878,68 @@
             document.getElementById('mines-cashout-btn').classList.add('hidden');
             document.getElementById('mines-bet-amount').disabled = false;
             document.getElementById('mines-count-select').disabled = false;
+        }
+
+        // 7. CLASSIC SLOT MACHINE LOGIC (WITH BUTTON LOCK)
+        const slotSymbols = ['🔥', '💎', '🔔', '🍋', '🍒'];
+        function spinSlots() {
+            const btn = document.getElementById('slots-play-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const betAmt = parseFloat(document.getElementById('slots-bet-amount').value);
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            document.getElementById('slots-result-msg').textContent = 'Spinning...';
+
+            let rolls = 0;
+            const spinInterval = setInterval(() => {
+                document.getElementById('slot-reel-1').textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+                document.getElementById('slot-reel-2').textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+                document.getElementById('slot-reel-3').textContent = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+                rolls++;
+
+                if (rolls > 15) {
+                    clearInterval(spinInterval);
+                    finalizeSlots(betAmt);
+                }
+            }, 80);
+        }
+
+        function finalizeSlots(betAmt) {
+            const btn = document.getElementById('slots-play-btn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            const r1 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+            const r2 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+            const r3 = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+
+            document.getElementById('slot-reel-1').textContent = r1;
+            document.getElementById('slot-reel-2').textContent = r2;
+            document.getElementById('slot-reel-3').textContent = r3;
+
+            let mult = 0;
+            if (r1 === r2 && r2 === r3) {
+                if (r1 === '🔥') mult = 20;
+                else if (r1 === '💎') mult = 10;
+                else if (r1 === '🔔') mult = 5;
+                else mult = 3;
+            } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+                mult = 1.5;
+            }
+
+            if (mult > 0) {
+                const winAmount = betAmt * mult;
+                addBalance(winAmount);
+                showGameResult(true, winAmount, "Classic Slots", "slots-result-msg");
+            } else {
+                showGameResult(false, betAmt, "Classic Slots", "slots-result-msg");
+            }
         }
     </script>
 </body>
