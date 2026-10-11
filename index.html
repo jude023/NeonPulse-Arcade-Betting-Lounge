@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeonPulse Arcade & Betting Lounge</title>
+    <link rel="icon" type="image/png" href="https://img.icons8.com/neon/96/dice.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        arcade: {
+                            dark: '#0f0c1b',
+                            card: '#1a1429',
+                            border: '#2d2446',
+                            neonPink: '#ff2a85',
+                            neonCyan: '#00f0ff',
+                            neonYellow: '#ffe600',
+                            neonPurple: '#9d00ff'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-pink': '0 0 15px rgba(255, 42, 133, 0.6)',
+                        'neon-cyan': '0 0 15px rgba(0, 240, 255, 0.6)',
+                        'neon-yellow': '0 0 15px rgba(255, 230, 0, 0.6)',
+                        'neon-purple': '0 0 20px rgba(157, 0, 255, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f0c1b;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0c1b; }
+        ::-webkit-scrollbar-thumb { background: #2d2446; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9d00ff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-arcade-dark text-slate-100 selection:bg-arcade-neonPink selection:text-white">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- AUTH VIEW -->
+    <div id="auth-view" class="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-arcade-neonPurple/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-arcade-neonCyan/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="w-full max-w-md bg-arcade-card/90 backdrop-blur-xl border border-arcade-border rounded-3xl p-8 shadow-2xl relative z-10">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-arcade-neonPurple to-arcade-neonPink shadow-neon-pink mb-4">
+                    <i class="fa-solid fa-gamepad text-3xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-black tracking-tight glow-text">NEONPULSE</h1>
+                <p class="text-xs tracking-widest text-arcade-neonCyan uppercase mt-1 font-semibold">Computer Shop Arcade Lounge</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex rounded-xl bg-arcade-dark/80 p-1 mb-6 border border-arcade-border">
+                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all bg-arcade-neonPurple text-white shadow-neon-purple">Login</button>
+                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-slate-400 hover:text-white">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Username / PC Seat</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="login-username" required placeholder="admin o pc1" class="w-full pl-10 pr-4 py-3 bg-arcade-dark/90 border border-arcade-border rounded-xl text-sm focus:outline-none focus:border-arcade-neonCyan text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-arcade-dark/90 border border-arcade-border rounded-xl text-sm focus:outline-none focus:border-arcade-neonCyan text-white">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonCyan to-blue-600 text-arcade-dark font-extrabold rounded-xl shadow-neon-cyan hover:opacity-95 transition-all">
+                    SIGN IN
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Username / PC Seat</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-user-plus"></i></span>
+                        <input type="text" id="reg-username" required placeholder="e.g. pc1 o player_juan" class="w-full pl-10 pr-4 py-3 bg-arcade-dark/90 border border-arcade-border rounded-xl text-sm focus:outline-none focus:border-arcade-neonPink text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-arcade-dark/90 border border-arcade-border rounded-xl text-sm focus:outline-none focus:border-arcade-neonPink text-white">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-extrabold rounded-xl shadow-neon-pink hover:opacity-95 transition-all">
+                    CREATE ACCOUNT (+₱50 Free)
+                </button>
+            </form>
+
+            <!-- <div class="mt-6 pt-6 border-t border-arcade-border text-center">
+                <p class="text-xs text-slate-400 mb-2 font-medium">Default Super Admin Demo:</p>
+                <button onclick="fillDemo('admin', 'admin123')" class="px-3 py-1.5 bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs rounded-lg hover:bg-purple-900/60 transition-all">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Admin (admin / admin123)
+                </button>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEW -->
+    <div id="main-app-view" class="flex-1 flex flex-col hidden">
+        <header class="bg-arcade-card/80 backdrop-blur-md border-b border-arcade-border sticky top-0 z-40 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-arcade-neonPurple to-arcade-neonPink flex items-center justify-center shadow-neon-pink">
+                    <i class="fa-solid fa-gamepad text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-black tracking-wider glow-text">NEONPULSE</span>
+                    <span id="role-badge" class="ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-cyan-500/20 text-arcade-neonCyan border border-arcade-neonCyan/40">User</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 bg-arcade-dark/80 border border-arcade-border px-4 py-2 rounded-2xl shadow-inner">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-arcade-dark font-bold text-sm shadow-neon-yellow">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Balance</div>
+                        <div id="header-balance" class="text-sm font-extrabold text-arcade-neonYellow">₱0.00</div>
+                    </div>
+                </div>
+
+                <button onclick="openRechargeModal()" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-bold text-xs rounded-xl shadow-neon-pink hover:opacity-95 transition-all">
+                    <i class="fa-solid fa-wallet"></i> Recharge
+                </button>
+
+                <button id="admin-nav-btn" onclick="toggleAdminDashboard()" class="hidden items-center gap-2 px-4 py-2.5 bg-purple-900/60 border border-purple-500 text-purple-200 font-bold text-xs rounded-xl hover:bg-purple-800/80 transition-all shadow-neon-purple">
+                    <i class="fa-solid fa-gauge-high"></i> <span id="admin-btn-text">Admin Panel</span>
+                </button>
+
+                <button onclick="handleLogout()" title="Logout" class="w-10 h-10 rounded-xl bg-arcade-dark border border-arcade-border flex items-center justify-center text-slate-400 hover:text-red-400 transition-all">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+
+            <!-- Lobby View -->
+            <div id="lobby-view">
+                <div class="relative rounded-3xl bg-gradient-to-r from-purple-900/40 via-indigo-950/60 to-pink-950/40 border border-arcade-border p-6 lg:p-10 mb-8 overflow-hidden shadow-2xl">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-arcade-neonPink/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="relative z-10 max-w-xl">
+                        <span class="text-xs font-bold uppercase tracking-widest text-arcade-neonPink bg-arcade-neonPink/10 px-3 py-1 rounded-full border border-arcade-neonPink/30 inline-block mb-3">Cloud Real-Time Connected 🟢</span>
+                        <h2 class="text-3xl lg:text-4xl font-black mb-3">Welcome, <span id="welcome-username" class="text-arcade-neonCyan">Player</span>!</h2>
+                        <p class="text-slate-300 text-sm mb-6 leading-relaxed">Pumili ng laro sa ibaba, tumaya, at manalo. Mag-request ng recharge sa counter para ma-approve agad ng admin!</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="openRechargeModal()" class="sm:hidden inline-flex items-center gap-2 px-5 py-2.5 bg-arcade-neonPink text-white font-bold text-xs rounded-xl shadow-neon-pink">
+                                <i class="fa-solid fa-wallet"></i> Request Recharge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <i class="fa-solid fa-fire text-arcade-neonPink"></i> Featured Arcade Games
+                        </h3>
+                        <p class="text-xs text-slate-400">Pumili ng banner para magsimula</p>
+                    </div>
+                </div>
+
+                <!-- GAMES GRID (6 GAMES TOTAL) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Game 1: Color Game -->
+                    <div onclick="openGame('color-game')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-arcade-neonPink transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+                            <div class="relative z-10 grid grid-cols-3 gap-2 p-3 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 group-hover:scale-105 transition-transform duration-300">
+                                <div class="w-6 h-6 rounded-lg bg-red-600 shadow-md"></div>
+                                <div class="w-6 h-6 rounded-lg bg-blue-600 shadow-md"></div>
+                                <div class="w-6 h-6 rounded-lg bg-yellow-500 shadow-md"></div>
+                                <div class="w-6 h-6 rounded-lg bg-green-600 shadow-md"></div>
+                                <div class="w-6 h-6 rounded-lg bg-slate-100 shadow-md"></div>
+                                <div class="w-6 h-6 rounded-lg bg-pink-500 shadow-md"></div>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-arcade-neonPink text-white rounded-full shadow-md">Popular</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-arcade-neonPink transition-colors">Color Game</h4>
+                                <p class="text-xs text-slate-400 mt-1">Perya style 6-color cubes.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-arcade-neonCyan">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 2: Lucky Wheel -->
+                    <div onclick="openGame('lucky-wheel')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-arcade-neonCyan transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-blue-950 via-indigo-950 to-cyan-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-20 h-20 rounded-full border-4 border-arcade-neonCyan/70 bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center shadow-neon-cyan group-hover:rotate-180 transition-transform duration-700">
+                                <i class="fa-solid fa-dharmachakra text-2xl text-white"></i>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-arcade-neonCyan text-arcade-dark rounded-full shadow-md">Multiplier</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-arcade-neonCyan transition-colors">Lucky Wheel</h4>
+                                <p class="text-xs text-slate-400 mt-1">Spin up to 10x stake.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-arcade-neonCyan">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 3: Coin Flip -->
+                    <div onclick="openGame('coin-flip')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-arcade-neonYellow transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-amber-950 via-yellow-950 to-orange-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-16 h-16 rounded-full border-4 border-arcade-neonYellow bg-gradient-to-tr from-yellow-500 to-amber-600 flex items-center justify-center shadow-neon-yellow group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-xl font-black text-arcade-dark">₱</span>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-arcade-neonYellow text-arcade-dark rounded-full shadow-md">50/50</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-arcade-neonYellow transition-colors">Coin Flip</h4>
+                                <p class="text-xs text-slate-400 mt-1">Heads or Tails double.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-arcade-neonYellow">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 4: Lucky Dice -->
+                    <div onclick="openGame('lucky-dice')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-purple-500 transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-purple-950 via-fuchsia-950 to-indigo-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-16 h-16 rounded-2xl border-2 border-purple-400 bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-neon-purple group-hover:rotate-12 transition-transform duration-300">
+                                <i class="fa-solid fa-dice text-2xl text-white"></i>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-purple-600 text-white rounded-full shadow-md">High/Low</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-purple-400 transition-colors">Lucky Dice</h4>
+                                <p class="text-xs text-slate-400 mt-1">Dice sum battle.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-purple-400">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 5: Speed Bingo -->
+                    <div onclick="openGame('bingo')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-emerald-500 transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-950 to-cyan-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-16 h-16 rounded-2xl border-2 border-emerald-400 bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="fa-solid fa-ticket text-2xl text-white"></i>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-emerald-600 text-white rounded-full shadow-md">Up to 4 Cards</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">Speed Bingo</h4>
+                                <p class="text-xs text-slate-400 mt-1">Multi-card 1-75 bingo draw.</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-emerald-400">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 6: Minesweeper / Coin Sweeper (BAGONG LARO!) -->
+                    <div onclick="openGame('mines')" class="group bg-arcade-card border border-arcade-border rounded-3xl overflow-hidden hover:border-rose-500 transition-all duration-300 cursor-pointer shadow-xl flex flex-col">
+                        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-rose-950 via-red-950 to-orange-950 flex items-center justify-center p-4">
+                            <div class="relative z-10 w-16 h-16 rounded-2xl border-2 border-rose-400 bg-gradient-to-tr from-rose-600 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="fa-solid fa-land-mine-on text-2xl text-white"></i>
+                            </div>
+                            <span class="absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 bg-rose-600 text-white rounded-full shadow-md">High Reward</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-base font-bold text-white group-hover:text-rose-400 transition-colors">Minesweeper</h4>
+                                <p class="text-xs text-slate-400 mt-1">Find Gems, Avoid Bombs & Cash Out!</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between pt-3 border-t border-arcade-border text-xs font-bold text-rose-400">
+                                <span>Play Now</span>
+                                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Admin View -->
+            <div id="admin-view" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-arcade-card border border-arcade-border p-6 rounded-3xl shadow-xl">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-full text-xs font-bold uppercase mb-2">
+                            <i class="fa-solid fa-shield-halved"></i> Super Account Control Center
+                        </div>
+                        <h2 class="text-2xl font-black text-white">Admin Dashboard</h2>
+                        <p class="text-xs text-slate-400 mt-1">Manage user recharges and balances in real-time across the shop.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="switchAdminTab('recharges')" id="admin-tab-recharges-btn" class="px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all">
+                            Recharge Requests <span id="pending-count-badge" class="ml-1 px-1.5 py-0.5 bg-arcade-neonPink text-white rounded-full text-[10px]">0</span>
+                        </button>
+                        <button onclick="switchAdminTab('users')" id="admin-tab-users-btn" class="px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border hover:text-white transition-all">
+                            User Management
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Tab 1: Recharges -->
+                <div id="admin-recharges-panel" class="bg-arcade-card border border-arcade-border rounded-3xl p-6 shadow-xl">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-wallet text-arcade-neonPink"></i> Pending Recharge Requests
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-arcade-dark/80 text-xs uppercase text-slate-400 border-b border-arcade-border">
+                                <tr>
+                                    <th class="p-3.5 rounded-l-xl">Username</th>
+                                    <th class="p-3.5">Requested Amount</th>
+                                    <th class="p-3.5">Time</th>
+                                    <th class="p-3.5 text-right rounded-r-xl">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-recharges-tbody" class="divide-y divide-arcade-border/50">
+                                <tr><td colspan="4" class="p-6 text-center text-slate-500 text-xs">Walang pending recharge.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Tab 2: Users -->
+                <div id="admin-users-panel" class="bg-arcade-card border border-arcade-border rounded-3xl p-6 shadow-xl hidden">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-arcade-neonCyan"></i> Registered Users & Balances
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-arcade-dark/80 text-xs uppercase text-slate-400 border-b border-arcade-border">
+                                <tr>
+                                    <th class="p-3.5 rounded-l-xl">Username</th>
+                                    <th class="p-3.5">Role</th>
+                                    <th class="p-3.5">Current Balance</th>
+                                    <th class="p-3.5 text-right rounded-r-xl">Edit Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-tbody" class="divide-y divide-arcade-border/50">
+                                <tr><td colspan="4" class="p-6 text-center text-slate-500 text-xs">Walang nakarehistrong user.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Recharge Request Modal -->
+    <div id="recharge-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+            <button onclick="closeRechargeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-arcade-neonPink/20 text-arcade-neonPink border border-arcade-neonPink/40 inline-flex items-center justify-center text-xl mb-3">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <h3 class="text-xl font-bold">Request Recharge</h3>
+                <p class="text-xs text-slate-400 mt-1">Mag-request ng chip top-up sa counter para ma-approve ng admin.</p>
+            </div>
+            <form onsubmit="submitRechargeRequest(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Amount (₱)</label>
+                    <input type="number" id="recharge-amount" min="50" step="50" value="500" required class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-arcade-neonPink">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="setRechargeAmount(100)" class="flex-1 py-2 bg-arcade-dark border border-arcade-border rounded-xl text-xs font-bold">₱100</button>
+                    <button type="button" onclick="setRechargeAmount(500)" class="flex-1 py-2 bg-arcade-dark border border-arcade-border rounded-xl text-xs font-bold">₱500</button>
+                    <button type="button" onclick="setRechargeAmount(1000)" class="flex-1 py-2 bg-arcade-dark border border-arcade-border rounded-xl text-xs font-bold">₱1,000</button>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-extrabold rounded-xl shadow-neon-pink hover:opacity-95 transition-all mt-4">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🏆 WIN / LOSE RESULT POPUP MODAL -->
+    <div id="result-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center relative">
+            <div id="res-icon-bg" class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg">
+                <i id="res-icon" class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 id="res-title" class="text-2xl font-black tracking-wider mb-1">YOU WIN!</h3>
+            <p id="res-subtitle" class="text-xs text-slate-400 mb-4">Game Result</p>
+            
+            <div class="bg-arcade-dark/80 border border-arcade-border rounded-2xl p-4 mb-6">
+                <div class="text-xs text-slate-400 mb-1">Pariwis / Payout</div>
+                <div id="res-amount" class="text-3xl font-black text-emerald-400">+₱0.00</div>
+                <div class="text-[10px] text-slate-500 mt-2">Balanse ngayon: <span id="res-new-balance" class="text-arcade-neonYellow font-bold">₱0.00</span></div>
+            </div>
+
+            <button onclick="closeResultModal()" class="w-full py-3 bg-gradient-to-r from-arcade-neonCyan to-blue-600 text-arcade-dark font-black rounded-xl shadow-neon-cyan hover:opacity-95 transition-all">
+                MAGLARO ULI
+            </button>
+        </div>
+    </div>
+
+    <!-- GAME MODALS -->
+    <!-- 1. Color Game -->
+    <div id="modal-color-game" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-2xl shadow-2xl relative my-auto">
+            <button onclick="closeGameModal('color-game')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-600 to-purple-600 flex items-center justify-center shadow-neon-pink"><i class="fa-solid fa-cubes text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Color Game</h3>
+                        <p class="text-xs text-slate-400">Pumili ng kulay at maglagay ng taya.</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+            <div class="bg-arcade-dark/80 border border-arcade-border rounded-2xl p-6 mb-6 text-center">
+                <div class="flex justify-center gap-4 mb-6">
+                    <div id="cg-die-1" class="w-20 h-20 rounded-2xl border-2 border-slate-700 bg-red-600 shadow-xl transition-all duration-200"></div>
+                    <div id="cg-die-2" class="w-20 h-20 rounded-2xl border-2 border-slate-700 bg-blue-600 shadow-xl transition-all duration-200"></div>
+                    <div id="cg-die-3" class="w-20 h-20 rounded-2xl border-2 border-slate-700 bg-yellow-500 shadow-xl transition-all duration-200"></div>
+                </div>
+                <div id="cg-result-msg" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pumili ng kulay sa ibaba</div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Pick Color</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                        <button onclick="selectColorGameColor('red')" id="cg-btn-red" class="cg-color-btn py-3 rounded-xl bg-red-600 font-bold text-white border-2 border-transparent">Red</button>
+                        <button onclick="selectColorGameColor('blue')" id="cg-btn-blue" class="cg-color-btn py-3 rounded-xl bg-blue-600 font-bold text-white border-2 border-transparent">Blue</button>
+                        <button onclick="selectColorGameColor('yellow')" id="cg-btn-yellow" class="cg-color-btn py-3 rounded-xl bg-yellow-500 font-bold text-arcade-dark border-2 border-transparent">Yellow</button>
+                        <button onclick="selectColorGameColor('green')" id="cg-btn-green" class="cg-color-btn py-3 rounded-xl bg-green-600 font-bold text-white border-2 border-transparent">Green</button>
+                        <button onclick="selectColorGameColor('white')" id="cg-btn-white" class="cg-color-btn py-3 rounded-xl bg-slate-100 font-bold text-arcade-dark border-2 border-transparent">White</button>
+                        <button onclick="selectColorGameColor('pink')" id="cg-btn-pink" class="cg-color-btn py-3 rounded-xl bg-pink-500 font-bold text-white border-2 border-transparent">Pink</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
+                        <input type="number" id="cg-bet-amount" min="10" value="50" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="playColorGame()" id="cg-play-btn" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonPink to-purple-600 text-white font-extrabold rounded-xl shadow-neon-pink">ROLL CUBES</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Lucky Wheel -->
+    <div id="modal-lucky-wheel" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-lg shadow-2xl relative my-auto text-center">
+            <button onclick="closeGameModal('lucky-wheel')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="flex items-center justify-between mb-6 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-neon-cyan"><i class="fa-solid fa-dharmachakra text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Lucky Wheel</h3>
+                        <p class="text-xs text-slate-400">Spin for multipliers up to 10x!</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+            <div class="relative w-48 h-48 mx-auto my-6 flex items-center justify-center">
+                <div id="wheel-element" class="w-full h-full rounded-full border-4 border-arcade-neonCyan bg-gradient-to-tr from-cyan-900 to-purple-900 flex items-center justify-center shadow-neon-cyan transition-all duration-1000">
+                    <span class="text-2xl font-black text-white">SPIN</span>
+                </div>
+            </div>
+            <div id="lw-result-msg" class="text-xs font-bold text-slate-400 uppercase mb-4">I-spin ang roleta</div>
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
+                    <input type="number" id="lw-bet-amount" min="10" value="100" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white">
+                </div>
+                <button onclick="playLuckyWheel()" id="lw-play-btn" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonCyan to-blue-600 text-arcade-dark font-extrabold rounded-xl shadow-neon-cyan">SPIN WHEEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Coin Flip -->
+    <div id="modal-coin-flip" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-md shadow-2xl relative my-auto">
+            <button onclick="closeGameModal('coin-flip')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-500 to-amber-600 flex items-center justify-center shadow-neon-yellow"><span class="text-xl font-black text-arcade-dark">₱</span></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Coin Flip</h3>
+                        <p class="text-xs text-slate-400">Heads or Tails.</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+            <div class="bg-arcade-dark/80 border border-arcade-border rounded-2xl p-6 mb-6 text-center">
+                <div id="coin-display" class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-yellow-400 to-amber-500 border-4 border-yellow-200 flex items-center justify-center text-3xl font-black text-arcade-dark shadow-neon-yellow mb-3">HEADS</div>
+                <div id="cf-result-msg" class="text-xs font-bold text-slate-400 uppercase">Pumili ng Heads o Tails</div>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectCoinChoice('heads')" id="cf-btn-heads" class="cf-choice-btn py-3 rounded-xl bg-yellow-500/20 border-2 border-yellow-500 text-yellow-300 font-bold">Heads</button>
+                    <button onclick="selectCoinChoice('tails')" id="cf-btn-tails" class="cf-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold">Tails</button>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
+                    <input type="number" id="cf-bet-amount" min="10" value="100" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white">
+                </div>
+                <button onclick="playCoinFlip()" id="cf-play-btn" class="w-full py-3.5 bg-gradient-to-r from-arcade-neonYellow to-amber-600 text-arcade-dark font-extrabold rounded-xl shadow-neon-yellow">FLIP COIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Lucky Dice -->
+    <div id="modal-lucky-dice" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-md shadow-2xl relative my-auto">
+            <button onclick="closeGameModal('lucky-dice')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-neon-purple"><i class="fa-solid fa-dice text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Lucky Dice</h3>
+                        <p class="text-xs text-slate-400">High (8-12) or Low (2-6).</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+            <div class="bg-arcade-dark/80 border border-arcade-border rounded-2xl p-6 mb-6 text-center">
+                <div class="flex justify-center gap-4 mb-3">
+                    <div id="ld-die-1" class="w-16 h-16 rounded-2xl bg-arcade-card border-2 border-purple-500/50 flex items-center justify-center text-2xl font-bold">🎲</div>
+                    <div id="ld-die-2" class="w-16 h-16 rounded-2xl bg-arcade-card border-2 border-purple-500/50 flex items-center justify-center text-2xl font-bold">🎲</div>
+                </div>
+                <div id="ld-result-msg" class="text-xs font-bold text-slate-400 uppercase">Pumili ng Low o High</div>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectDiceChoice('low')" id="ld-btn-low" class="ld-choice-btn py-3 rounded-xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 font-bold">Low [2x]</button>
+                    <button onclick="selectDiceChoice('high')" id="ld-btn-high" class="ld-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold">High [2x]</button>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Bet Amount (₱)</label>
+                    <input type="number" id="ld-bet-amount" min="10" value="100" class="w-full px-4 py-3 bg-arcade-dark border border-arcade-border rounded-xl text-sm font-bold text-white">
+                </div>
+                <button onclick="playLuckyDice()" id="ld-play-btn" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold rounded-xl shadow-neon-purple">ROLL DICE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. SPEED BINGO MODAL -->
+    <div id="modal-bingo" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-4xl shadow-2xl relative my-auto">
+            <button onclick="closeGameModal('bingo')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center shadow-lg"><i class="fa-solid fa-ticket text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Speed Bingo (1-75 Balls)</h3>
+                        <p class="text-xs text-slate-400">Pumili ng cards (1-4) at suriin ang winning patterns sa gilid.</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-arcade-dark/80 p-3 rounded-2xl border border-arcade-border items-end">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Dami ng Cards (1-4)</label>
+                            <select id="bingo-card-count" onchange="setupBingoCards()" class="w-full px-3 py-2 bg-arcade-card border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+                                <option value="1">1 Card</option>
+                                <option value="2">2 Cards</option>
+                                <option value="3">3 Cards</option>
+                                <option value="4">4 Cards</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Taya bawat Card (₱)</label>
+                            <input type="number" id="bingo-bet-per-card" min="10" value="50" onchange="checkBingoTotalBet()" class="w-full px-3 py-2 bg-arcade-card border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <button onclick="setupBingoCards()" id="bingo-shuffle-btn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-emerald-400 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-shuffle"></i> Shuffle
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center px-2 text-xs">
+                        <span class="text-slate-400">Kabuuan ng Taya (Total Bet):</span>
+                        <span id="bingo-total-bet-display" class="font-black text-arcade-neonYellow">₱50.00</span>
+                    </div>
+
+                    <div id="bingo-cards-container" class="flex flex-wrap justify-center gap-3 max-h-64 overflow-y-auto p-2 bg-arcade-dark/50 rounded-2xl border border-arcade-border"></div>
+
+                    <div class="flex items-center justify-between bg-arcade-dark p-3 rounded-2xl border border-arcade-border">
+                        <div id="bingo-last-ball" class="text-xs font-bold text-emerald-400">Huling Bola: --</div>
+                        <div id="bingo-status-msg" class="text-xs text-slate-400">Maghanda sa pagbaba ng bola</div>
+                    </div>
+
+                    <button onclick="startSpeedBingo()" id="bingo-play-btn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all">
+                        SIMULAN ANG BINGO DRAW (1-75)
+                    </button>
+                </div>
+
+                <div class="bg-arcade-dark/90 border border-arcade-border rounded-2xl p-4 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-sm font-black text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-award"></i> Winning Patterns & Payouts
+                        </h4>
+                        <div class="space-y-3 text-xs">
+                            <div class="bg-arcade-card p-3 rounded-xl border border-arcade-border flex items-center justify-between">
+                                <div><div class="font-bold text-white">1 Line Across</div><div class="text-[10px] text-slate-400">1 row horizontal</div></div>
+                                <div class="text-right"><div id="payout-1line" class="font-extrabold text-arcade-neonYellow">₱175.00</div><div class="text-[10px] text-emerald-400">3.5x Bet</div></div>
+                            </div>
+                            <div class="bg-arcade-card p-3 rounded-xl border border-arcade-border flex items-center justify-between">
+                                <div><div class="font-bold text-white">2 Lines Across</div><div class="text-[10px] text-slate-400">2 rows horizontal</div></div>
+                                <div class="text-right"><div id="payout-2lines" class="font-extrabold text-arcade-neonYellow">₱400.00</div><div class="text-[10px] text-emerald-400">8x Bet</div></div>
+                            </div>
+                            <div class="bg-arcade-card p-3 rounded-xl border border-arcade-border flex items-center justify-between">
+                                <div><div class="font-bold text-white">Full House</div><div class="text-[10px] text-slate-400">Lahat ng numero</div></div>
+                                <div class="text-right"><div id="payout-fullhouse" class="font-extrabold text-arcade-neonYellow">₱1,250.00</div><div class="text-[10px] text-emerald-400">25x Bet</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. MINESWEEPER / COIN SWEEPER MODAL -->
+    <div id="modal-mines" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="bg-arcade-card border border-arcade-border rounded-3xl p-6 lg:p-8 w-full max-w-xl shadow-2xl relative my-auto">
+            <button onclick="closeGameModal('mines')" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-red-600 flex items-center justify-center shadow-lg"><i class="fa-solid fa-land-mine-on text-white text-xl"></i></div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">Minesweeper</h3>
+                        <p class="text-xs text-slate-400">Maghanap ng Gems, iwasan ang Bomba!</p>
+                    </div>
+                </div>
+                <div class="bg-arcade-dark px-4 py-2 rounded-2xl border border-arcade-border text-right">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">Iyong Balanse</div>
+                    <div class="text-sm font-extrabold text-arcade-neonYellow modal-user-balance">₱0.00</div>
+                </div>
+            </div>
+
+            <!-- Game Control Inputs -->
+            <div class="grid grid-cols-2 gap-3 bg-arcade-dark/80 p-3 rounded-2xl border border-arcade-border mb-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Taya (₱)</label>
+                    <input type="number" id="mines-bet-amount" min="10" value="50" class="w-full px-3 py-2 bg-arcade-card border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-rose-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Dami ng Bomba</label>
+                    <select id="mines-count-select" class="w-full px-3 py-2 bg-arcade-card border border-arcade-border rounded-xl text-sm font-bold text-white focus:outline-none focus:border-rose-500">
+                        <option value="1">1 Bomba (Low Risk)</option>
+                        <option value="3" selected>3 Bomba (Medium)</option>
+                        <option value="5">5 Bomba (High Risk)</option>
+                        <option value="10">10 Bomba (Extreme)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mines Grid Board (5x5) -->
+            <div id="mines-board" class="grid grid-cols-5 gap-2 bg-arcade-dark p-3 rounded-2xl border border-arcade-border mb-4">
+                <!-- 25 Tiles populated by JS -->
+            </div>
+
+            <!-- Action Buttons & Multiplier Display -->
+            <div class="flex items-center justify-between gap-3">
+                <div id="mines-multiplier-info" class="text-xs text-slate-400 font-bold">
+                    Multiplier: <span id="mines-mult-val" class="text-rose-400 font-black text-sm">1.00x</span>
+                </div>
+                <div class="flex-1 max-w-xs">
+                    <button onclick="startMinesGame()" id="mines-start-btn" class="w-full py-3 bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all">START GAME</button>
+                    <button onclick="cashoutMines()" id="mines-cashout-btn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold rounded-xl shadow-lg hover:opacity-95 transition-all hidden">CASH OUT (₱0.00)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhwjouYnHgLZSEfmHYfp9WlmYXDl0KBU0",
+            authDomain: "computershoparcade.firebaseapp.com",
+            databaseURL: "https://computershoparcade-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "computershoparcade",
+            storageBucket: "computershoparcade.firebasestorage.app",
+            messagingSenderId: "777025113004",
+            appId: "1:777025113004:web:0efe07e122f54543128809",
+            measurementId: "G-JQH9EWQDNX"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let allUsers = {};
+        let pendingRecharges = {};
+        let currentUserSession = null;
+
+        const colorHexMap = {
+            'red': '#dc2626',
+            'blue': '#2563eb',
+            'yellow': '#eab308',
+            'green': '#16a34a',
+            'white': '#f8fafc',
+            'pink': '#ec4899'
+        };
+
+        function initDefaultAdmin() {
+            db.ref('users/admin').once('value', snapshot => {
+                if (!snapshot.exists()) {
+                    db.ref('users/admin').set({
+                        username: 'admin',
+                        password: 'admin123',
+                        balance: 50000,
+                        isAdmin: true
+                    });
+                }
+            });
+        }
+        initDefaultAdmin();
+
+        db.ref('users').on('value', snapshot => {
+            allUsers = snapshot.val() || {};
+            if (currentUserSession && allUsers[currentUserSession.username]) {
+                currentUserSession = allUsers[currentUserSession.username];
+                updateBalanceDisplay();
+            }
+            if (currentUserSession && currentUserSession.isAdmin) {
+                updateAdminDashboard();
+            }
+        });
+
+        db.ref('recharges').on('value', snapshot => {
+            pendingRecharges = snapshot.val() || {};
+            if (currentUserSession && currentUserSession.isAdmin) {
+                updateAdminDashboard();
+            }
+        });
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bgClass = 'bg-arcade-card border-arcade-border text-white';
+            let icon = 'fa-circle-info text-arcade-neonCyan';
+            if (type === 'success') {
+                bgClass = 'bg-emerald-950/90 border-emerald-500 text-emerald-200';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-rose-950/90 border-rose-500 text-rose-200';
+                icon = 'fa-circle-exclamation text-rose-400';
+            }
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border ${bgClass} shadow-xl backdrop-blur-md transition-all transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i><span class="text-xs font-bold">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // RESULT POPUP & GAME TEXT LOGIC
+        function showGameResult(isWin, amount, gameName, msgElementId) {
+            const msgEl = document.getElementById(msgElementId);
+            if (msgEl) {
+                if (isWin) {
+                    msgEl.innerHTML = `<span class="text-emerald-400 font-extrabold text-sm">🎉 YOU WIN! +₱${amount.toFixed(2)}</span>`;
+                } else {
+                    msgEl.innerHTML = `<span class="text-rose-500 font-extrabold text-sm">💸 YOU LOSE! -₱${amount.toFixed(2)}</span>`;
+                }
+            }
+
+            const modal = document.getElementById('result-modal');
+            const iconBg = document.getElementById('res-icon-bg');
+            const icon = document.getElementById('res-icon');
+            const title = document.getElementById('res-title');
+            const subtitle = document.getElementById('res-subtitle');
+            const amtDisplay = document.getElementById('res-amount');
+            const balDisplay = document.getElementById('res-new-balance');
+
+            subtitle.textContent = gameName;
+            balDisplay.textContent = `₱${currentUserSession.balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            if (isWin) {
+                iconBg.className = "w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                icon.className = "fa-solid fa-trophy";
+                title.textContent = "YOU WIN!";
+                title.className = "text-2xl font-black tracking-wider mb-1 text-emerald-400";
+                amtDisplay.textContent = `+₱${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                amtDisplay.className = "text-3xl font-black text-emerald-400";
+            } else {
+                iconBg.className = "w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-rose-500/20 text-rose-400 border border-rose-500/40";
+                icon.className = "fa-solid fa-face-frown";
+                title.textContent = "YOU LOSE!";
+                title.className = "text-2xl font-black tracking-wider mb-1 text-rose-500";
+                amtDisplay.textContent = `-₱${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                amtDisplay.className = "text-3xl font-black text-rose-500";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const registerBtn = document.getElementById('tab-register-btn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginBtn.className = 'flex-1 py-2.5 text-sm font-bold rounded-lg transition-all bg-arcade-neonPurple text-white shadow-neon-purple';
+                registerBtn.className = 'flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-slate-400 hover:text-white';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                registerBtn.className = 'flex-1 py-2.5 text-sm font-bold rounded-lg transition-all bg-arcade-neonPink text-white shadow-neon-pink';
+                loginBtn.className = 'flex-1 py-2.5 text-sm font-bold rounded-lg transition-all text-slate-400 hover:text-white';
+            }
+        }
+
+        function fillDemo(u, p) {
+            document.getElementById('login-username').value = u;
+            document.getElementById('login-password').value = p;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            if (username === 'admin' && password === 'admin123') {
+                const adminUser = { username: 'admin', password: 'admin123', balance: 50000, isAdmin: true };
+                db.ref('users/admin').set(adminUser);
+                currentUserSession = adminUser;
+                showToast('Welcome Back, Super Admin!', 'success');
+                initAppUI();
+                toggleAdminDashboard();
+                return;
+            }
+
+            const user = allUsers[username];
+            if (!user || user.password !== password) {
+                showToast('Maling username o password!', 'error');
+                return;
+            }
+
+            currentUserSession = { username, ...user };
+            showToast(`Welcome back, ${username}!`, 'success');
+            initAppUI();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+
+            if (username.length < 3) {
+                showToast('Username ay dapat 3 characters pataas!', 'error');
+                return;
+            }
+            if (allUsers[username]) {
+                showToast('Ang username na ito ay nagamit na!', 'error');
+                return;
+            }
+
+            const newUser = { username, password, balance: 50, isAdmin: false };
+            db.ref('users/' + username).set(newUser);
+            currentUserSession = newUser;
+            showToast('Account created successfully! +₱50 free chips!', 'success');
+            initAppUI();
+        }
+
+        function handleLogout() {
+            currentUserSession = null;
+            showToast('Nakapag-logout na.', 'info');
+            initAppUI();
+        }
+
+        function initAppUI() {
+            const authView = document.getElementById('auth-view');
+            const mainAppView = document.getElementById('main-app-view');
+
+            if (!currentUserSession) {
+                authView.classList.remove('hidden');
+                mainAppView.classList.add('hidden');
+                return;
+            }
+
+            authView.classList.add('hidden');
+            mainAppView.classList.remove('hidden');
+
+            document.getElementById('welcome-username').textContent = currentUserSession.username;
+            updateBalanceDisplay();
+
+            const roleBadge = document.getElementById('role-badge');
+            const adminNavBtn = document.getElementById('admin-nav-btn');
+
+            if (currentUserSession.isAdmin) {
+                roleBadge.textContent = 'Super Admin';
+                roleBadge.className = 'ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/40';
+                adminNavBtn.classList.remove('hidden');
+                adminNavBtn.classList.add('flex');
+                updateAdminDashboard();
+            } else {
+                roleBadge.textContent = 'Player';
+                roleBadge.className = 'ml-2 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-cyan-500/20 text-arcade-neonCyan border border-arcade-neonCyan/40';
+                adminNavBtn.classList.add('hidden');
+                adminNavBtn.classList.remove('flex');
+                document.getElementById('lobby-view').classList.remove('hidden');
+                document.getElementById('admin-view').classList.add('hidden');
+            }
+        }
+
+        function updateBalanceDisplay() {
+            if (!currentUserSession) return;
+            const balStr = `₱${(currentUserSession.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('header-balance').textContent = balStr;
+            document.querySelectorAll('.modal-user-balance').forEach(el => el.textContent = balStr);
+        }
+
+        function deductBalance(amount) {
+            if (currentUserSession.balance < amount) {
+                showToast('Kulang ang iyong balanse! Mag-recharge sa counter.', 'error');
+                return false;
+            }
+            currentUserSession.balance -= amount;
+            db.ref('users/' + currentUserSession.username + '/balance').set(currentUserSession.balance);
+            updateBalanceDisplay();
+            return true;
+        }
+
+        function addBalance(amount) {
+            currentUserSession.balance += amount;
+            db.ref('users/' + currentUserSession.username + '/balance').set(currentUserSession.balance);
+            updateBalanceDisplay();
+        }
+
+        function openRechargeModal() { document.getElementById('recharge-modal').classList.remove('hidden'); }
+        function closeRechargeModal() { document.getElementById('recharge-modal').classList.add('hidden'); }
+        function setRechargeAmount(amt) { document.getElementById('recharge-amount').value = amt; }
+
+        function submitRechargeRequest(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('recharge-amount').value);
+            if (isNaN(amount) || amount <= 0) return;
+
+            const reqId = 'req_' + Date.now();
+            const rechargeData = {
+                id: reqId,
+                username: currentUserSession.username,
+                amount: amount,
+                status: 'pending',
+                date: new Date().toLocaleTimeString()
+            };
+
+            db.ref('recharges/' + reqId).set(rechargeData);
+            closeRechargeModal();
+            showToast('Recharge request sent to admin!', 'success');
+        }
+
+        function toggleAdminDashboard() {
+            const lobbyView = document.getElementById('lobby-view');
+            const adminView = document.getElementById('admin-view');
+
+            if (adminView.classList.contains('hidden')) {
+                lobbyView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                document.getElementById('admin-btn-text').textContent = 'Exit Admin';
+                updateAdminDashboard();
+            } else {
+                adminView.classList.add('hidden');
+                lobbyView.classList.remove('hidden');
+                document.getElementById('admin-btn-text').textContent = 'Admin Panel';
+            }
+        }
+
+        function switchAdminTab(tab) {
+            const rPanel = document.getElementById('admin-recharges-panel');
+            const uPanel = document.getElementById('admin-users-panel');
+            const rBtn = document.getElementById('admin-tab-recharges-btn');
+            const uBtn = document.getElementById('admin-tab-users-btn');
+
+            if (tab === 'recharges') {
+                rPanel.classList.remove('hidden');
+                uPanel.classList.add('hidden');
+                rBtn.className = 'px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all';
+                uBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
+            } else {
+                uPanel.classList.remove('hidden');
+                rPanel.classList.add('hidden');
+                uBtn.className = 'px-4 py-2 bg-purple-900 text-purple-200 text-xs font-bold rounded-xl border border-purple-500 transition-all';
+                rBtn.className = 'px-4 py-2 bg-arcade-dark text-slate-400 text-xs font-bold rounded-xl border border-arcade-border';
+            }
+        }
+
+        function updateAdminDashboard() {
+            const reqKeys = Object.keys(pendingRecharges);
+            const pendingCount = reqKeys.filter(k => pendingRecharges[k].status === 'pending').length;
+            document.getElementById('pending-count-badge').textContent = pendingCount;
+
+            const rTbody = document.getElementById('admin-recharges-tbody');
+            if (reqKeys.length === 0) {
+                rTbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500 text-xs">Walang pending recharge requests.</td></tr>`;
+            } else {
+                rTbody.innerHTML = reqKeys.map(k => {
+                    const r = pendingRecharges[k];
+                    return `
+                        <tr class="border-b border-arcade-border/50 hover:bg-arcade-dark/40">
+                            <td class="p-3.5 font-bold text-white">${r.username}</td>
+                            <td class="p-3.5 font-extrabold text-arcade-neonYellow">₱${r.amount.toLocaleString()}</td>
+                            <td class="p-3.5 text-xs text-slate-400">${r.date}</td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="approveRecharge('${r.id}', '${r.username}', ${r.amount})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold mr-1">Accept</button>
+                                <button onclick="rejectRecharge('${r.id}')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const userKeys = Object.keys(allUsers);
+            const uTbody = document.getElementById('admin-users-tbody');
+            uTbody.innerHTML = userKeys.map(username => {
+                const u = allUsers[username];
+                return `
+                    <tr class="border-b border-arcade-border/50 hover:bg-arcade-dark/40">
+                        <td class="p-3.5 font-bold text-white">${u.username}</td>
+                        <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.isAdmin ? 'bg-purple-500/20 text-purple-300' : 'bg-slate-800 text-slate-400'}">${u.isAdmin ? 'Admin' : 'User'}</span></td>
+                        <td class="p-3.5 font-extrabold text-arcade-neonCyan">₱${Number(u.balance || 0).toLocaleString()}</td>
+                        <td class="p-3.5 text-right">
+                            <button onclick="adminAdjustBalance('${username}')" class="px-3 py-1.5 bg-purple-950 border border-purple-500/50 text-purple-300 rounded-lg text-xs font-bold">Edit Balance</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function approveRecharge(id, username, amount) {
+            if (!allUsers[username]) return;
+            const newBal = Number(allUsers[username].balance || 0) + amount;
+            db.ref('users/' + username + '/balance').set(newBal);
+            db.ref('recharges/' + id).remove();
+            showToast(`Approved ₱${amount} for ${username}!`, 'success');
+        }
+
+        function rejectRecharge(id) {
+            db.ref('recharges/' + id).remove();
+            showToast('Recharge request rejected.', 'info');
+        }
+
+        function adminAdjustBalance(username) {
+            const amtStr = prompt(`Bagong balanse para kay ${username}:`, allUsers[username].balance || 0);
+            if (amtStr === null) return;
+            const newAmt = parseFloat(amtStr);
+            if (isNaN(newAmt)) return;
+            db.ref('users/' + username + '/balance').set(newAmt);
+            showToast(`Updated balance for ${username}!`, 'success');
+        }
+
+        function openGame(id) { 
+            document.getElementById(`modal-${id}`).classList.remove('hidden'); 
+            if(id === 'bingo') { setupBingoCards(); }
+            if(id === 'mines') { renderMinesInitialBoard(); }
+        }
+        function closeGameModal(id) { document.getElementById(`modal-${id}`).classList.add('hidden'); }
+
+        // 1. COLOR GAME LOGIC
+        let selectedColorGameColor = 'red';
+        function selectColorGameColor(color) {
+            selectedColorGameColor = color;
+            document.querySelectorAll('.cg-color-btn').forEach(btn => btn.style.borderColor = 'transparent');
+            document.getElementById(`cg-btn-${color}`).style.borderColor = '#fff';
+        }
+
+        const colorsList = ['red', 'blue', 'yellow', 'green', 'white', 'pink'];
+        function playColorGame() {
+            const betAmt = parseFloat(document.getElementById('cg-bet-amount').value);
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+
+            let rolls = 0;
+            const interval = setInterval(() => {
+                for (let i = 1; i <= 3; i++) {
+                    const c = colorsList[Math.floor(Math.random() * colorsList.length)];
+                    document.getElementById(`cg-die-${i}`).style.backgroundColor = colorHexMap[c];
+                }
+                rolls++;
+                if (rolls > 12) {
+                    clearInterval(interval);
+                    finalizeColorGame(betAmt);
+                }
+            }, 80);
+        }
+
+        function finalizeColorGame(betAmt) {
+            const results = [];
+            for (let i = 1; i <= 3; i++) {
+                const c = colorsList[Math.floor(Math.random() * colorsList.length)];
+                results.push(c);
+                document.getElementById(`cg-die-${i}`).style.backgroundColor = colorHexMap[c];
+            }
+
+            let matches = results.filter(c => c === selectedColorGameColor).length;
+            if (matches > 0) {
+                const winAmount = betAmt * matches;
+                addBalance(betAmt + winAmount);
+                showGameResult(true, winAmount, "Color Game", "cg-result-msg");
+            } else {
+                showGameResult(false, betAmt, "Color Game", "cg-result-msg");
+            }
+        }
+
+        // 2. LUCKY WHEEL LOGIC
+        const wheelMultipliers = [0, 0.5, 1, 2, 3, 5, 0, 10];
+        function playLuckyWheel() {
+            const betAmt = parseFloat(document.getElementById('lw-bet-amount').value);
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+
+            const wheel = document.getElementById('wheel-element');
+            wheel.style.transform = `rotate(${1440 + Math.floor(Math.random() * 360)}deg)`;
+
+            setTimeout(() => {
+                const mult = wheelMultipliers[Math.floor(Math.random() * wheelMultipliers.length)];
+                if (mult > 0) {
+                    const winnings = betAmt * mult;
+                    addBalance(winnings);
+                    showGameResult(true, winnings - betAmt, "Lucky Wheel", "lw-result-msg");
+                } else {
+                    showGameResult(false, betAmt, "Lucky Wheel", "lw-result-msg");
+                }
+            }, 1000);
+        }
+
+        // 3. COIN FLIP LOGIC
+        let selectedCoinChoice = 'heads';
+        function selectCoinChoice(choice) {
+            selectedCoinChoice = choice;
+            document.getElementById('cf-btn-heads').className = choice === 'heads' ? 'cf-choice-btn py-3 rounded-xl bg-yellow-500/20 border-2 border-yellow-500 text-yellow-300 font-bold' : 'cf-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold';
+            document.getElementById('cf-btn-tails').className = choice === 'tails' ? 'cf-choice-btn py-3 rounded-xl bg-yellow-500/20 border-2 border-yellow-500 text-yellow-300 font-bold' : 'cf-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold';
+        }
+
+        function playCoinFlip() {
+            const betAmt = parseFloat(document.getElementById('cf-bet-amount').value);
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+
+            setTimeout(() => {
+                const outcome = Math.random() < 0.5 ? 'heads' : 'tails';
+                document.getElementById('coin-display').textContent = outcome.toUpperCase();
+                if (outcome === selectedCoinChoice) {
+                    const winnings = betAmt * 2;
+                    addBalance(winnings);
+                    showGameResult(true, betAmt, "Coin Flip", "cf-result-msg");
+                } else {
+                    showGameResult(false, betAmt, "Coin Flip", "cf-result-msg");
+                }
+            }, 500);
+        }
+
+        // 4. LUCKY DICE LOGIC
+        let selectedDiceChoice = 'low';
+        function selectDiceChoice(choice) {
+            selectedDiceChoice = choice;
+            document.getElementById('ld-btn-low').className = choice === 'low' ? 'ld-choice-btn py-3 rounded-xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 font-bold' : 'ld-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold';
+            document.getElementById('ld-btn-high').className = choice === 'high' ? 'ld-choice-btn py-3 rounded-xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 font-bold' : 'ld-choice-btn py-3 rounded-xl bg-arcade-dark border-2 border-arcade-border text-slate-400 font-bold';
+        }
+
+        function playLuckyDice() {
+            const betAmt = parseFloat(document.getElementById('ld-bet-amount').value);
+            if (isNaN(betAmt) || betAmt <= 0 || !deductBalance(betAmt)) return;
+
+            setTimeout(() => {
+                const d1 = Math.floor(1 + Math.random() * 6);
+                const d2 = Math.floor(1 + Math.random() * 6);
+                const total = d1 + d2;
+                document.getElementById('ld-die-1').textContent = d1;
+                document.getElementById('ld-die-2').textContent = d2;
+
+                const isLow = total <= 6;
+                const isHigh = total >= 8;
+                const userWon = (selectedDiceChoice === 'low' && isLow) || (selectedDiceChoice === 'high' && isHigh);
+
+                if (userWon) {
+                    const winnings = betAmt * 2;
+                    addBalance(winnings);
+                    showGameResult(true, betAmt, "Lucky Dice", "ld-result-msg");
+                } else {
+                    showGameResult(false, betAmt, "Lucky Dice", "ld-result-msg");
+                }
+            }, 600);
+        }
+
+        // 5. SPEED BINGO LOGIC
+        let bingoCards = [];
+
+        function generateBingoCard() {
+            let card = [];
+            for (let col = 0; col < 5; col++) {
+                let min = col * 15 + 1;
+                let max = min + 14;
+                let colNums = [];
+                while(colNums.length < 5) {
+                    let rand = Math.floor(Math.random() * (max - min + 1)) + min;
+                    if(!colNums.includes(rand)) colNums.push(rand);
+                }
+                card.push(colNums);
+            }
+            card[2][2] = 'FREE';
+            return card;
+        }
+
+        function checkBingoTotalBet() {
+            const count = parseInt(document.getElementById('bingo-card-count').value);
+            const betPerCard = parseFloat(document.getElementById('bingo-bet-per-card').value) || 0;
+            const totalBet = count * betPerCard;
+            
+            document.getElementById('bingo-total-bet-display').textContent = `₱${totalBet.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            
+            document.getElementById('payout-1line').textContent = `₱${(totalBet * 3.5).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('payout-2lines').textContent = `₱${(totalBet * 8).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('payout-fullhouse').textContent = `₱${(totalBet * 25).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            return totalBet;
+        }
+
+        function setupBingoCards() {
+            const count = parseInt(document.getElementById('bingo-card-count').value);
+            bingoCards = [];
+            const container = document.getElementById('bingo-cards-container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                let card = generateBingoCard();
+                bingoCards.push(card);
+                
+                let cardHtml = `<div class="bg-arcade-dark p-2.5 rounded-2xl border border-arcade-border text-center shadow-md">
+                    <div class="text-[11px] font-bold text-emerald-400 mb-1.5">Card #${i+1}</div>
+                    <div class="grid grid-cols-5 gap-1 text-[10px] font-bold">
+                        <div class="text-red-400">B</div><div class="text-blue-400">I</div><div class="text-yellow-400">N</div><div class="text-green-400">G</div><div class="text-purple-400">O</div>`;
+                
+                for (let r = 0; r < 5; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        let val = card[c][r];
+                        let isFree = val === 'FREE';
+                        cardHtml += `<div id="bcard-${i}-${c}-${r}" class="w-7 h-7 rounded flex items-center justify-center ${isFree ? 'bg-emerald-600 text-white font-black text-[8px]' : 'bg-slate-800 text-slate-200'}">${val}</div>`;
+                    }
+                }
+                cardHtml += `</div></div>`;
+                container.innerHTML += cardHtml;
+            }
+
+            checkBingoTotalBet();
+        }
+
+        function startSpeedBingo() {
+            const count = parseInt(document.getElementById('bingo-card-count').value);
+            const betPerCard = parseFloat(document.getElementById('bingo-bet-per-card').value);
+            const totalBet = count * betPerCard;
+
+            if (isNaN(betPerCard) || betPerCard <= 0) {
+                showToast('Ilagay ang tamang taya bawat card!', 'error');
+                return;
+            }
+
+            if (currentUserSession.balance < totalBet) {
+                showToast(`Kulang ang balanse! Kailangan ng ₱${totalBet.toFixed(2)} para sa ${count} cards.`, 'error');
+                return;
+            }
+
+            if (!deductBalance(totalBet)) return;
+
+            document.getElementById('bingo-play-btn').disabled = true;
+            document.getElementById('bingo-shuffle-btn').disabled = true;
+            document.getElementById('bingo-card-count').disabled = true;
+            document.getElementById('bingo-status-msg').textContent = 'Binubunot ang mga bola...';
+
+            let ballsPool = [];
+            for(let i=1; i<=75; i++) ballsPool.push(i);
+            ballsPool.sort(() => Math.random() - 0.5);
+
+            const MAX_BALL_DRAWS = 38;
+            let drawnBalls = [];
+            let ballIndex = 0;
+
+            let drawInterval = setInterval(() => {
+                if (ballIndex >= MAX_BALL_DRAWS || ballIndex >= ballsPool.length) {
+                    clearInterval(drawInterval);
+                    finishBingoGame(false, totalBet);
+                    return;
+                }
+
+                let currentBall = ballsPool[ballIndex];
+                drawnBalls.push(currentBall);
+                ballIndex++;
+
+                document.getElementById('bingo-last-ball').textContent = `Huling Bola: ${currentBall}`;
+                document.getElementById('bingo-status-msg').textContent = `Naiwang Bola sa Draw: ${MAX_BALL_DRAWS - ballIndex}`;
+
+                let highestMultiplier = 0;
+
+                for (let i = 0; i < bingoCards.length; i++) {
+                    let card = bingoCards[i];
+                    for (let c = 0; c < 5; c++) {
+                        for (let r = 0; r < 5; r++) {
+                            if (card[c][r] === currentBall || card[c][r] === 'FREE') {
+                                let cell = document.getElementById(`bcard-${i}-${c}-${r}`);
+                                if (cell) cell.className = "w-7 h-7 rounded flex items-center justify-center bg-emerald-500 text-arcade-dark font-bold shadow";
+                            }
+                        }
+                    }
+
+                    let fullHouse = true;
+                    let completedRows = 0;
+
+                    for (let r = 0; r < 5; r++) {
+                        let rowComplete = true;
+                        for (let c = 0; c < 5; c++) {
+                            let val = card[c][r];
+                            if (val !== 'FREE' && !drawnBalls.includes(val)) {
+                                rowComplete = false;
+                                fullHouse = false;
+                            }
+                        }
+                        if (rowComplete) completedRows++;
+                    }
+
+                    if (fullHouse && 25 > highestMultiplier) {
+                        highestMultiplier = 25;
+                    } else if (completedRows >= 2 && 8 > highestMultiplier) {
+                        highestMultiplier = 8;
+                    } else if (completedRows >= 1 && 3.5 > highestMultiplier) {
+                        highestMultiplier = 3.5;
+                    }
+                }
+
+                if (highestMultiplier > 0) {
+                    clearInterval(drawInterval);
+                    let winnings = totalBet * highestMultiplier;
+                    addBalance(winnings);
+                    finishBingoGame(true, winnings);
+                }
+            }, 120);
+        }
+
+        function finishBingoGame(isWin, amount) {
+            document.getElementById('bingo-play-btn').disabled = false;
+            document.getElementById('bingo-shuffle-btn').disabled = false;
+            document.getElementById('bingo-card-count').disabled = false;
+
+            if (isWin) {
+                showGameResult(true, amount, "Speed Bingo Payout", "bingo-status-msg");
+            } else {
+                showGameResult(false, amount, "Speed Bingo", "bingo-status-msg");
+            }
+        }
+
+        // 6. MINESWEEPER GAME LOGIC
+        let minesActive = false;
+        let minesGrid = []; // Array of 25 items: 'gem' or 'bomb'
+        let revealedCount = 0;
+        let currentMinesBet = 0;
+        let minesCount = 3;
+        let currentMinesMult = 1.0;
+
+        function renderMinesInitialBoard() {
+            const board = document.getElementById('mines-board');
+            board.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                board.innerHTML += `<button disabled class="h-12 bg-arcade-card border border-arcade-border rounded-xl text-xl font-bold text-slate-600 flex items-center justify-center opacity-70">❓</button>`;
+            }
+            document.getElementById('mines-mult-val').textContent = '1.00x';
+            document.getElementById('mines-start-btn').classList.remove('hidden');
+            document.getElementById('mines-cashout-btn').classList.add('hidden');
+        }
+
+        function startMinesGame() {
+            const betAmt = parseFloat(document.getElementById('mines-bet-amount').value);
+            minesCount = parseInt(document.getElementById('mines-count-select').value);
+
+            if (isNaN(betAmt) || betAmt <= 0) {
+                showToast('Ilagay ang tamang taya!', 'error');
+                return;
+            }
+
+            if (!deductBalance(betAmt)) return;
+
+            currentMinesBet = betAmt;
+            minesActive = true;
+            revealedCount = 0;
+            currentMinesMult = 1.0;
+
+            // Generate Board Array
+            minesGrid = Array(25).fill('gem');
+            let placed = 0;
+            while (placed < minesCount) {
+                let idx = Math.floor(Math.random() * 25);
+                if (minesGrid[idx] !== 'bomb') {
+                    minesGrid[idx] = 'bomb';
+                    placed++;
+                }
+            }
+
+            // Render Board UI Buttons
+            const board = document.getElementById('mines-board');
+            board.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                board.innerHTML += `<button id="mine-tile-${i}" onclick="clickMineTile(${i})" class="h-12 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-lg flex items-center justify-center transition-all">❓</button>`;
+            }
+
+            document.getElementById('mines-start-btn').classList.add('hidden');
+            const cashoutBtn = document.getElementById('mines-cashout-btn');
+            cashoutBtn.classList.remove('hidden');
+            cashoutBtn.textContent = `CASH OUT (₱${currentMinesBet.toFixed(2)})`;
+            document.getElementById('mines-mult-val').textContent = '1.00x';
+            document.getElementById('mines-bet-amount').disabled = true;
+            document.getElementById('mines-count-select').disabled = true;
+        }
+
+        function clickMineTile(idx) {
+            if (!minesActive) return;
+            const tile = document.getElementById(`mine-tile-${idx}`);
+            if (!tile || tile.disabled) return;
+
+            tile.disabled = true;
+
+            if (minesGrid[idx] === 'bomb') {
+                // BOMBA NA-CLICK! SABOG!
+                tile.className = "h-12 bg-rose-600 text-white rounded-xl text-2xl flex items-center justify-center border-2 border-rose-400 animate-pulse";
+                tile.innerHTML = "💣";
+                revealAllMines();
+                minesActive = false;
+                showGameResult(false, currentMinesBet, "Minesweeper", "mines-multiplier-info");
+                resetMinesUIControls();
+            } else {
+                // GEM NA-CLICK! TUMAAS ANG MULTIPLIER
+                tile.className = "h-12 bg-emerald-600 text-white rounded-xl text-2xl flex items-center justify-center border-2 border-emerald-400 shadow-md";
+                tile.innerHTML = "💎";
+                revealedCount++;
+
+                // Formula for Multiplier increase based on safe tiles left
+                const totalGems = 25 - minesCount;
+                currentMinesMult = parseFloat((1 + (revealedCount * (0.15 * minesCount))).toFixed(2));
+                
+                const currentPayout = currentMinesBet * currentMinesMult;
+                document.getElementById('mines-mult-val').textContent = `${currentMinesMult.toFixed(2)}x`;
+                
+                const cashoutBtn = document.getElementById('mines-cashout-btn');
+                cashoutBtn.textContent = `CASH OUT (₱${currentPayout.toFixed(2)})`;
+
+                // If cleared all safe gems
+                if (revealedCount === totalGems) {
+                    cashoutMines();
+                }
+            }
+        }
+
+        function cashoutMines() {
+            if (!minesActive) return;
+            minesActive = false;
+            const winAmount = currentMinesBet * currentMinesMult;
+            addBalance(winAmount);
+            revealAllMines();
+            showGameResult(true, winAmount - currentMinesBet, "Minesweeper Cashout", "mines-multiplier-info");
+            resetMinesUIControls();
+        }
+
+        function revealAllMines() {
+            for (let i = 0; i < 25; i++) {
+                const tile = document.getElementById(`mine-tile-${i}`);
+                if (tile) {
+                    tile.disabled = true;
+                    if (minesGrid[i] === 'bomb') {
+                        tile.innerHTML = "💣";
+                        if (!tile.classList.contains('bg-rose-600')) {
+                            tile.className = "h-12 bg-rose-950/60 text-white rounded-xl text-lg flex items-center justify-center border border-rose-500/40 opacity-80";
+                        }
+                    } else if (tile.innerHTML === '❓') {
+                        tile.innerHTML = "💎";
+                        tile.className = "h-12 bg-slate-900 text-slate-500 rounded-xl text-lg flex items-center justify-center border border-slate-800 opacity-50";
+                    }
+                }
+            }
+        }
+
+        function resetMinesUIControls() {
+            document.getElementById('mines-start-btn').classList.remove('hidden');
+            document.getElementById('mines-cashout-btn').classList.add('hidden');
+            document.getElementById('mines-bet-amount').disabled = false;
+            document.getElementById('mines-count-select').disabled = false;
+        }
+    </script>
+</body>
+</html>
